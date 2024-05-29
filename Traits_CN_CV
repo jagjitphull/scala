@@ -1,0 +1,156 @@
+Traits_CN_CV
+
+trait Speaker:
+  def speak(): String  // has no body, so it’s abstract
+
+trait TailWagger:
+  def startTail(): Unit = println("tail is wagging")
+  def stopTail(): Unit = println("tail is stopped")
+
+trait Runner:
+  def startRunning(): Unit = println("I’m running")
+  def stopRunning(): Unit = println("Stopped running")
+
+class Dog(name: String) extends Speaker, TailWagger, Runner:
+  def speak(): String = "Woof!"
+
+class Cat(name: String) extends Speaker, TailWagger, Runner:
+  def speak(): String = "Meow"
+  override def startRunning(): Unit = println("Yeah ... I don’t run")
+  override def stopRunning(): Unit = println("No need to stop")
+
+val d = Dog("Rover")
+println(d.speak())      // prints "Woof!"
+
+val c = Cat("Morris")
+println(c.speak())      // "Meow"
+c.startRunning()        // "Yeah ... I don’t run"
+c.stopRunning()         // "No need to stop"
+
+
+
+
+
+###############################################################
+
+
+In Scala, the concepts of "call by value" and "call by name" are two different evaluation strategies for function arguments. They determine when and how the arguments to a function are evaluated. Here’s an explanation of both with examples:
+
+### Call by Value
+
+- **Evaluation Strategy**: In call by value, the argument expressions are evaluated before entering the function. The result of this evaluation (the value) is then passed to the function.
+- **Behavior**: The expression is evaluated once, and the evaluated value is used wherever the parameter is referenced in the function body.
+- **Syntax**: This is the default evaluation strategy in Scala.
+
+**Example:**
+
+
+def callByValue(x: Long): Long = {
+  println("By value: " + x)
+  println("By value: " + x)
+  x
+}
+
+val startTime = System.nanoTime()
+callByValue(startTime)
+
+
+**Output:**
+
+By value: 1620827733834463000
+By value: 1620827733834463000
+
+
+In this example, `startTime` is evaluated once before entering the `callByValue` function, and the same value is used in both print statements.
+
+### Call by Name
+
+- **Evaluation Strategy**: In call by name, the argument expressions are not evaluated before entering the function. Instead, the expressions are passed literally to the function and are evaluated each time they are used within the function.
+- **Behavior**: The expression is evaluated every time the parameter is referenced in the function body.
+- **Syntax**: Use the `=>` symbol before the parameter type to indicate call by name.
+
+**Example:**
+
+
+def callByName(x: => Long): Long = {
+  println("By name: " + x)
+  println("By name: " + x)
+  x
+}
+
+callByName(System.nanoTime())
+
+
+**Output:**
+
+
+By name: 1620827733836864000
+By name: 1620827733837113000
+
+
+In this example, `System.nanoTime()` is evaluated each time `x` is referenced within the `callByName` function, resulting in different values being printed.
+
+### Comparing Call by Value and Call by Name
+
+- **Call by Value**:
+  - Evaluates the argument expression before calling the function.
+  - The result is a single value that is used throughout the function.
+  - More efficient when the expression is simple and inexpensive to evaluate.
+  - Use when the argument is not computationally expensive and should be evaluated only once.
+
+- **Call by Name**:
+  - Delays the evaluation of the argument expression until it is used within the function.
+  - The expression is re-evaluated every time it is referenced.
+  - Useful for lazy evaluation, where you want to avoid unnecessary computations.
+  - Use when the expression is expensive to compute and you want to avoid evaluation unless necessary.
+
+### Example Use Case: Lazy Evaluation
+
+A common use case for call by name is implementing control structures like custom loops or conditionals.
+
+
+def whileLoop(condition: => Boolean)(body: => Unit): Unit = {
+  if (condition) {
+    body
+    whileLoop(condition)(body)
+  }
+}
+
+var i = 0
+whileLoop(i < 5) {
+  println(i)
+  i += 1
+}
+
+
+In this example, `condition` and `body` are evaluated by name, allowing `i` to be incremented and checked in each iteration, just like in a traditional while loop. This demonstrates how call by name can be used to create custom control structures that behave similarly to built-in ones.
+
+By understanding the differences between call by value and call by name, you can choose the appropriate evaluation strategy for your specific use case, optimizing performance and behavior of your Scala programs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
